@@ -13,3 +13,7 @@ This shows how to grid and align ggplots generated via a function. It uses the s
 # addGeneAnnotations.r
 
 This uses BioMart and MGI annotations to improve standard Affymetrix microarray gene annotation, allowing probesets that are incorrectly annotated to be detected for downstream scripts. An example is probesetid 17215370, which is (as of 2017-08) annotated as the protein-coding gene Atg16l1, but actually maps to a scaRNA within an intron (Gm25395). BioMart contains Ensembl's own mappings of the sequence features associated with the oligos, so the scaRNA id maps to the probesetid. Mismatches between the expected and Ensembl biotype can be used as an extra filter. 
+
+# Gviz_demo.R
+
+This shows how to generate a custom ideogram track for use when plotting UCSC gene data
