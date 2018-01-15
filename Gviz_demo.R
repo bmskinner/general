@@ -4,6 +4,7 @@
 library(Gviz)
 library(GenomicRanges)
 library(tidyverse)
+library(biomaRt)
 
 genome="susScr11" 
 chr   = "chr1"
@@ -68,6 +69,9 @@ options(ucscChromosomeNames=TRUE, Gviz.ucscUrl="http://genome-euro.ucsc.edu/cgi-
 # Custom ideogram track using the data defined above
 iTrack = Gviz::IdeogramTrack(genome=genome, chromosome=chr, bands=ideogramData)
 
+# Ideogram track using band data from UCSC; not present for pig
+# iTrack = Gviz::IdeogramTrack(genome=genome, chromosome=chr)
+
 # Make a genome axis over the region
 gAxis = Gviz::GenomeAxisTrack(range, lwd=2, fontsize=10)
 
@@ -81,12 +85,12 @@ cpgTrack = Gviz::UcscTrack(genome=genome, chromosome=chr, track="cpgIslandExt", 
 # Plot the tracks in the desired order
 plotTracks(list(iTrack, gAxis, gTrack, cpgTrack ))
 
-# Alternative: fetch gene data from BioMart - but cannot be used with UCSC tracks, including ideogram tracks
+# Alternative: fetch gene data from BioMart
+host   = "www.ensembl.org"
+mart   = useMart("ENSEMBL_MART_ENSEMBL", dataset="sscrofa_gene_ensembl", host=host) #connect
+fm     = Gviz:::.getBMFeatureMap()
+dTrack = Gviz::BiomartGeneRegionTrack(genome= "Sscrofa11.1",
+                                      chromosome = chr, start = start, end = end,
+                                      name = "Ensembl", biomart = mart, showId = TRUE,                                               featureMap = fm)
 
-# host = "www.ensembl.org" 
-# mart = useMart("ENSEMBL_MART_ENSEMBL", dataset="sscrofa_gene_ensembl", host=host) #connect
-# fm   = Gviz:::.getBMFeatureMap()
-# fm["symbol"] = "external_gene_id"
-# dTrack = Gviz::BiomartGeneRegionTrack(genome= "Sscrofa11.1", 
-#                                       chromosome = chr, start = start, end = end,
-#                                       name = "ENSEMBL", biomart = mart, showId = TRUE)
+plotTracks(list(iTrack, gAxis, dTrack, cpgTrack ), stacking="squish")
