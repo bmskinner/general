@@ -14,10 +14,7 @@ data.file = "plot_multiple_ggplots_demo.csv"
 data = read.csv(data.file, sep="\t", header=T, stringsAsFactors = F)
 
 # Take just the columns whose name starts with "Angle_profile_"
-# This also shows how the dplyr package can  be used to filter
-# unwanted rows
-profiles = data %>% dplyr::select(one_of(paste0("Angle_profile_", seq(0,99,1)))) %>%
-  dplyr::filter(Angle_profile_0 > 40)
+profiles = data %>% dplyr::select(one_of(paste0("Angle_profile_", seq(0,99,1))))
   
   
 # Example of making a chart
