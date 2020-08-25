@@ -57,6 +57,8 @@ data$agnes = clusters
 tsne.values$agnes = clusters
 
 # Plot the tSNE results coloured by cluster
-ggplot(tsne.values, aes(x=V1, y=V2, col=agnes))+
+# The 'agnes' column is converted to a factor to give
+# a discrete colour palette
+ggplot(tsne.values, aes(x=V1, y=V2, col=as.factor(agnes)))+
   geom_point()
 
