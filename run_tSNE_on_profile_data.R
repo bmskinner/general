@@ -1,32 +1,17 @@
 # Demonstration of how to read a sample tsv of morphology data, extract the relevant
 # columns for the angle profile, run a tSNE, cluster, and display the result
-
-# Load the required packages
 library(tidyverse)
 library(Rtsne)
 library(cluster)
 library(dendextend)
 
-# Define the input data file
-data.file = "plot_multiple_ggplots_demo.csv"
-
 # Read in the input data file
-data = read.csv(data.file, sep="\t", header=T, stringsAsFactors = F)
+data = read.csv("NMA_full_export_demo.csv", sep="\t", header=T, stringsAsFactors = F)
 
-# Take just the columns whose name starts with "Angle_profile_"
+# Take just the angle profile columns
 profiles = data %>% dplyr::select(one_of(paste0("Angle_profile_", seq(0,99,1))))
   
-  
-# Example of making a chart
-# Plot the areas as a volin chart plus with a bar-chart
-# Rotate the x-axis labels to 45 degrees to avoid overlaps
-ggplot(data, aes(x=Dataset, y=Area_square_pixels))+
-  geom_violin()+
-  geom_boxplot(width=0.2, outlier.shape = NA)+ # Outliers are shown as dots by default - can make chart messier
-  theme(axis.text.x = element_text(angle = 45, hjust = 1)) # Theme functions allow all aspects of the plot to be changed
-  
-
-# Set the rownames of the data using the cell id for convenience
+# Set the rownames of the data using the cell id and the strain for convenience
 rownames(profiles) = data$CellID
 
 # Set the random number generator with a seed for reproducilble results
@@ -40,7 +25,7 @@ tsne.values = as.data.frame(rtsne_out$Y)
 ggplot(tsne.values, aes(x=V1, y=V2))+
   geom_point()
 
-# Cluster the tSNE values using hierarchical clustering
+#Cluster the tSNE values using hierarchical clustering
 # The agnes function is agglomerative nesting
 hc = cluster::agnes(tsne.values, method = "ward")
 
@@ -51,14 +36,11 @@ dend = as.dendrogram(hc)
 clusters = dendextend::cutree(dend, 4)
 
 # Assign the group names to the original data
-data$agnes = as.factor(clusters)
+data$agnes = clusters
 
 # Assign the group names to the tSNE results
-# The 'agnes' column is converted to a factor to give
-# a discrete colour palette in charts
-tsne.values$agnes = as.factor(clusters)
+tsne.values$agnes = clusters
 
 # Plot the tSNE results coloured by cluster
-ggplot(tsne.values, aes(x=V1, y=V2, col=as.factor(agnes)))+
+ggplot(tsne.values, aes(x=V1, y=V2, col=agnes))+
   geom_point()
-
