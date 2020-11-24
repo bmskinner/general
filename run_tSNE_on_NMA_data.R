@@ -51,14 +51,14 @@ dend = as.dendrogram(hc)
 clusters = dendextend::cutree(dend, 4)
 
 # Assign the group names to the original data
-data$agnes = clusters
+data$agnes = as.factor(clusters)
 
 # Assign the group names to the tSNE results
-tsne.values$agnes = clusters
+# The 'agnes' column is converted to a factor to give
+# a discrete colour palette in charts
+tsne.values$agnes = as.factor(clusters)
 
 # Plot the tSNE results coloured by cluster
-# The 'agnes' column is converted to a factor to give
-# a discrete colour palette
 ggplot(tsne.values, aes(x=V1, y=V2, col=as.factor(agnes)))+
   geom_point()
 
