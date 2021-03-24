@@ -35,7 +35,7 @@ print "Registry loaded\n";
 # Setup
 #######################
 my $inFile = $ARGV[0]; # input file - first argument
-my $outFile = $inFile . "out.tsv";
+my $outFile = $inFile . ".out.tsv";
 if(-e $outFile) { unlink $outFile; } # delete output file if exists
 
 #######################
@@ -56,23 +56,22 @@ open(IN, "<", $inFile) or die "Can't open $inFile : $!";
 open(OUT, ">", $outFile) or die "Can't open $outFile : $!";
 
 while(<IN>) { # for every line in the input file
-	chomp; # remove trailing whitespace
+	chomp; # remove any trailing whitespace from the line
 	my ($chr, $start, $stop) = split('\t',$_); # assign new variables with each value in the tsv 
-
-	# Now we print to the output file handle rather than the console
-	print OUT $chr . "\t" . $start . "\t" . $stop . "\t";
 
 	# Get the specified slice
 	my $slice = $slice_adaptor->fetch_by_region( 'chromosome', $chr, $start, $stop );
 	my $sequence = $slice->seq(); # get the DNA sequence from the slice
 
-	print OUT $sequence . "\n";
+	# Print status to console
+	print $chr . "\t" . $start . "\t" . $stop . "\n";
+
+	# Now we print to the output file handle rather than the console
+	# Ensure any excess whitespace is removed from start and stop
+	# by taking only the integer component
+	print OUT $chr . "\t" . int($start) . "\t" . int($stop) . "\t" . $sequence . "\n";
 }
 close(IN); # close the files
 close(OUT);
 
 print "Done\n";
-
-
-
-
